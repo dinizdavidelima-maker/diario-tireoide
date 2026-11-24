@@ -29,6 +29,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Nunito",syste
 .wrap{max-width:540px;margin:0 auto;padding:18px 16px 110px}
 h1,h2{font-family:"Playfair Display",Georgia,serif;color:var(--deep);margin:0;line-height:1.1;text-wrap:balance}
 h1{font-size:30px}h2{font-size:22px;margin:22px 0 10px}
+.warn{background:#FFF4E5;border:1px solid #F0C98A;color:#7A4B12;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:15px;line-height:1.4}.warn[hidden]{display:none}
 .hello{font-family:"Dancing Script",cursive;font-size:26px;color:var(--rose);margin:0}
 .date{color:var(--soft);font-size:15px;margin:2px 0 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
@@ -87,6 +88,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 <body>
 <div class="wrap">
   <header>
+    <div class="warn" id="warn" hidden><b>Atenção:</b> este navegador não está guardando suas anotações. Abra o link no Chrome (Android) ou no Safari (iPhone) e toque em "Adicionar à tela inicial".</div>
     <p class="hello" id="hello">Bom dia</p>
     <h1>Meu diário da tireoide</h1>
     <p class="date" id="today"></p>
@@ -234,7 +236,11 @@ let S=blank();
 
 function day(){S.days[cur]=S.days[cur]||{med:false,wait:false,cast:false,agua:0,mov:0,sono:7,energia:0,humor:0,sint:[],nota:''};return S.days[cur]}
 
-function local(get,val){try{if(get)return JSON.parse(localStorage.getItem('diarioTireoide')||'null');localStorage.setItem('diarioTireoide',JSON.stringify(val))}catch(e){return null}}
+let storeOK=true;
+function local(get,val){try{if(get)return JSON.parse(localStorage.getItem('diarioTireoide')||'null');localStorage.setItem('diarioTireoide',JSON.stringify(val));storeOK=true}catch(e){if(!get&&storeOK){storeOK=false;showWarn()}return null}}
+function showWarn(){const w=document.getElementById('warn');if(w)w.hidden=false}
+(function(){try{localStorage.setItem('_t','1');if(localStorage.getItem('_t')!=='1')throw 0;localStorage.removeItem('_t')}catch(e){storeOK=false;setTimeout(showWarn,0)}
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}})();
 function save(){
   local(false,S);
 }
@@ -393,6 +399,7 @@ $('pdf').onclick=()=>{
 /* ---------- load ---------- */
 const L=local(true);if(L&&L.days)S=Object.assign(blank(),L);
 render();
+const flush=()=>local(false,S);window.addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
 }
 </script>
 </body>
