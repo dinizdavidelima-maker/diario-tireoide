@@ -150,7 +150,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       <div class="fig"><svg id="chartP"></svg></div>
       <div class="grid2" style="margin-top:8px">
         <div><label for="pesoD">Data</label><input type="date" id="pesoD"></div>
-        <div><label for="pesoV">Peso (kg)</label><input type="number" step="0.1" inputmode="decimal" id="pesoV" placeholder="68,5"></div>
+        <div><label for="pesoV">Peso (kg)</label><input type="text" inputmode="decimal" id="pesoV" placeholder="68,5"></div>
       </div>
       <button class="btn" id="addPeso">Salvar peso</button>
     </div>
@@ -399,7 +399,7 @@ $('pdf').onclick=()=>{
 /* ---------- load ---------- */
 const L=local(true);if(L&&L.days)S=Object.assign(blank(),L);
 render();
-const flush=()=>local(false,S);window.addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')return;const N=local(true);if(N&&N.days&&JSON.stringify(N)!==JSON.stringify(S)){S=Object.assign(blank(),N);render()}});
 }
 </script>
 </body>
