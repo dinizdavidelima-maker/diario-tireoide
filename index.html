@@ -30,6 +30,14 @@ body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Nunito",syste
 h1,h2{font-family:"Playfair Display",Georgia,serif;color:var(--deep);margin:0;line-height:1.1;text-wrap:balance}
 h1{font-size:30px}h2{font-size:22px;margin:22px 0 10px}
 .warn{background:#FFF4E5;border:1px solid #F0C98A;color:#7A4B12;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:15px;line-height:1.4}.warn[hidden]{display:none}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--soft);background:none;border:0;padding:4px 0;font-family:"Nunito";cursor:pointer;text-align:left}
+.sync b{color:var(--deep)}
+.acc-or{display:flex;align-items:center;gap:10px;color:var(--soft);font-size:14px;margin:14px 0 2px}.acc-or:before,.acc-or:after{content:"";flex:1;height:1px;background:var(--line)}
+.btn.g{background:#fff;color:#3c4043;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.linkbtn{background:none;border:0;color:var(--deep);font:700 15px "Nunito";text-decoration:underline;padding:10px 0;cursor:pointer}
+.accmsg{font-size:15px;margin:10px 0 0;min-height:1em}.accmsg.err{color:#A3341F}
+.hidden{display:none!important}
 .hello{font-family:"Dancing Script",cursive;font-size:26px;color:var(--rose);margin:0}
 .date{color:var(--soft);font-size:15px;margin:2px 0 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
@@ -92,6 +100,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     <p class="hello" id="hello">Bom dia</p>
     <h1>Meu diário da tireoide</h1>
     <p class="date" id="today"></p>
+    <button class="sync" id="syncLine" type="button"></button>
   </header>
 
   <!-- ============ HOJE ============ -->
@@ -202,6 +211,27 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     <div class="card"><span class="pill p2">Soja</span><p>Leite e proteína de soja: 3 a 4 horas longe do remédio.</p></div>
     <div class="card"><span class="pill p3">Avisar o médico</span><p>Cansaço que piora, ganho de peso rápido, coração acelerado, ou um caroço no pescoço que cresce, dificuldade para engolir ou rouquidão.</p></div>
 
+    <h2 id="contaH">Minha conta</h2>
+    <div class="card" id="conta">
+      <div id="accOut">
+        <p style="margin:0 0 4px">Entre para guardar seu diário na nuvem. Se trocar de celular, é só entrar de novo que está tudo lá.</p>
+        <button class="btn g" id="gLogin" type="button"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.6 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.2 0-11.5-4.1-13.4-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>Entrar com Google</button>
+        <div class="acc-or">ou com e-mail e senha</div>
+        <label for="em">E-mail</label><input id="em" type="email" autocomplete="email" inputmode="email" placeholder="seuemail@exemplo.com">
+        <label for="pw">Senha</label><input id="pw" type="password" autocomplete="current-password" placeholder="pelo menos 6 letras ou números">
+        <div class="row2"><button class="btn" id="eLogin" type="button">Entrar</button><button class="btn ghost" id="eSign" type="button">Criar conta</button></div>
+        <button class="linkbtn" id="eReset" type="button">Esqueci minha senha</button>
+      </div>
+      <div id="accIn" class="hidden">
+        <p style="margin:0">Conectada como <b id="accWho"></b></p>
+        <p class="muted" id="accSync" style="margin:6px 0 0"></p>
+        <button class="btn ghost" id="logout" type="button">Sair da conta</button>
+        <button class="linkbtn" id="delAcc" type="button">Excluir minha conta e meus dados da nuvem</button>
+      </div>
+      <p class="accmsg" id="accMsg" role="status"></p>
+      <p class="muted" style="margin:10px 0 0;font-size:13px">Privacidade: com a conta, o diário fica guardado no Google Firebase, em São Paulo, e só você consegue abrir. Sem conta, fica só neste celular.</p>
+    </div>
+
     <h2>Meus ajustes</h2>
     <div class="card">
       <label for="nome">Como quer ser chamada?</label><input id="nome" placeholder="seu nome">
@@ -242,7 +272,9 @@ function showWarn(){const w=document.getElementById('warn');if(w)w.hidden=false}
 (function(){try{localStorage.setItem('_t','1');if(localStorage.getItem('_t')!=='1')throw 0;localStorage.removeItem('_t')}catch(e){storeOK=false;setTimeout(showWarn,0)}
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}})();
 function save(){
+  S.u=Date.now();if(S.days[cur])S.days[cur].t=S.u;
   local(false,S);
+  if(window.nuvemSave)window.nuvemSave();
 }
 let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200)}
 
@@ -308,7 +340,7 @@ function renderExa(){
   const tv=tsh.map(o=>o.v);line($('chartT'),tsh,0,Math.max(5,...tv),'#9DBA97',v=>String(v).replace('.',','));
 }
 function renderGuia(){if(document.activeElement!==$('nome'))$('nome').value=S.nome==='mãe'?'':(S.nome||'');$('hora').value=S.hora||'06:30';
-  $('where').textContent='Seus dados ficam salvos só neste aparelho, com privacidade. Use a cópia de segurança de vez em quando.'}
+  $('where').textContent=statusNuvem&&statusNuvem.on?'Seus dados ficam neste celular e na sua conta.':'Sem conta, seus dados ficam só neste celular. Entre na sua conta (acima) ou use a cópia de segurança de vez em quando.'}
 const EN=['','Muito cansada','Cansada','Normal','Bem disposta','Ótima'],HU=['','Triste','Meh','Ok','Bem','Ótima'];
 function renderHist(){
   const ks=Object.keys(S.days).sort().reverse();
@@ -383,7 +415,7 @@ $('pesoD').value=T;$('exD').value=T;
 $('addPeso').onclick=()=>{const v=parseFloat(String($('pesoV').value).replace(',','.'));if(!(v>20&&v<300)){toast('Digite o peso em kg, ex.: 68,5');return}const d=$('pesoD').value||T;S.peso=S.peso.filter(o=>o.d!==d);S.peso.push({d,kg:Math.round(v*10)/10});$('pesoV').value='';save();renderEvo();toast('Peso salvo')};
 ['Consulta','Exame','US'].forEach(k=>$('d'+k).onchange=()=>{S.datas[k]=$('d'+k).value;save();renderExa()});
 $('addEx').onclick=()=>{const raw=String($('exV').value).trim();if(!raw){toast('Digite o resultado do exame');return}const n=parseFloat(raw.replace(',','.'));S.exames.push({id:Date.now().toString(36),t:$('exT').value,v:isNaN(n)?raw:n,d:$('exD').value||T});$('exV').value='';save();renderExa();toast('Resultado salvo')};
-$('exList').onclick=e=>{const b=e.target.closest('.del');if(!b)return;S.exames=S.exames.filter(o=>o.id!==b.dataset.id);save();renderExa()};
+$('exList').onclick=e=>{const b=e.target.closest('.del');if(!b)return;S.exames=S.exames.filter(o=>o.id!==b.dataset.id);S.exDel=[...(S.exDel||[]),b.dataset.id];save();renderExa()};
 $('nome').oninput=()=>{S.nome=$('nome').value.trim();save();renderHoje()};
 $('hora').onchange=()=>{S.hora=$('hora').value;save();renderHoje()};
 $('copy').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(S));toast('Copiado! Cole numa conversa ou nota para guardar')}catch(e){toast('Não deu para copiar neste aparelho')}};
@@ -396,11 +428,99 @@ $('pdf').onclick=()=>{
   try{const blob=buildPDF();const name='Relatorio_Diario_Tireoide_'+T+'.pdf';const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);$('pdfMsg').textContent='Relatório baixado. Pode mostrar ao médico ou mandar pelo WhatsApp.'}
   catch(e){$('pdfMsg').textContent='Não consegui gerar o relatório agora. Tente de novo.'}
 };
+/* ---------- nuvem: juntar cópias ---------- */
+function juntar(a,b){ // a e b: duas cópias do diário; nada se perde
+  a=Object.assign(blank(),a||{});b=Object.assign(blank(),b||{});
+  const nova=(b.u||0)>(a.u||0)?b:a, velha=nova===a?b:a;
+  const R=Object.assign(blank(),JSON.parse(JSON.stringify(nova)));
+  const vazio=d=>!d||(!d.med&&!d.wait&&!d.cast&&!d.agua&&!d.mov&&!d.energia&&!d.humor&&!(d.sint||[]).length&&!d.nota&&(d.sono===7||d.sono==null));
+  R.days={};
+  new Set([...Object.keys(a.days||{}),...Object.keys(b.days||{})]).forEach(k=>{
+    const x=(a.days||{})[k],y=(b.days||{})[k];
+    let d=!x?y:!y?x:vazio(x)&&!vazio(y)?y:vazio(y)&&!vazio(x)?x:((y.t||0)>(x.t||0)?y:x);
+    R.days[k]=JSON.parse(JSON.stringify(d));
+  });
+  const pes={};[...(velha.peso||[]),...(nova.peso||[])].forEach(o=>pes[o.d]=o);R.peso=Object.values(pes).sort((m,n)=>m.d<n.d?-1:1);
+  R.exDel=[...new Set([...(a.exDel||[]),...(b.exDel||[])])];
+  const ex={};[...(velha.exames||[]),...(nova.exames||[])].forEach(o=>ex[o.id]=o);R.exames=Object.values(ex).filter(o=>!R.exDel.includes(o.id));
+  R.datas=Object.assign({},velha.datas||{},nova.datas||{});
+  R.u=Math.max(a.u||0,b.u||0);
+  return R;
+}
+window.Diario={get:()=>S,blank,juntar,
+  set:x=>{S=Object.assign(blank(),x);local(false,S);render()},
+  status:t=>{statusNuvem=t;renderSync()}};
+let statusNuvem={on:false};
+function renderSync(){
+  const t=statusNuvem,el=$('syncLine');
+  if(!t.on){el.innerHTML='Salvo neste celular · <b>Guardar na nuvem</b>';}
+  else el.innerHTML=t.erro?'Sem internet agora · salvo no celular, envia depois':'☁︎ Salvo na nuvem'+(t.hora?' às '+t.hora:'');
+  if($('accSync'))$('accSync').textContent=t.on?(t.erro?'Sem internet agora. Fica salvo no celular e vai para a nuvem quando a internet voltar.':'Seu diário está salvo na nuvem'+(t.hora?' (última vez às '+t.hora+')':'')+'.'):'';
+}
+$('syncLine').onclick=()=>{document.querySelector('[data-v=guia]').click();setTimeout(()=>$('contaH').scrollIntoView({behavior:'smooth'}),60)};
 /* ---------- load ---------- */
 const L=local(true);if(L&&L.days)S=Object.assign(blank(),L);
-render();
+render();renderSync();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')return;const N=local(true);if(N&&N.days&&JSON.stringify(N)!==JSON.stringify(S)){S=Object.assign(blank(),N);render()}});
 }
+</script>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,signOut,deleteUser} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import {initializeFirestore,persistentLocalCache,memoryLocalCache,doc,getDoc,setDoc,deleteDoc,onSnapshot} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+const app=initializeApp({apiKey:"AIzaSyAjTXvyzzEIJYLbqDZYJImhFHCW_exQP2M",authDomain:"diario-tireoide.firebaseapp.com",projectId:"diario-tireoide",storageBucket:"diario-tireoide.firebasestorage.app",messagingSenderId:"425498841823",appId:"1:425498841823:web:4ace52c709130993afcf6a"});
+const auth=getAuth(app);auth.languageCode='pt-BR';
+let db;try{db=initializeFirestore(app,{localCache:persistentLocalCache()})}catch(e){db=initializeFirestore(app,{localCache:memoryLocalCache()})}
+const $=id=>document.getElementById(id),D=window.Diario;
+let ref=null,unsub=null,timer=null,ultimo='';
+const hora=()=>new Date().toTimeString().slice(0,5);
+const msg=(t,err)=>{$('accMsg').textContent=t||'';$('accMsg').classList.toggle('err',!!err)};
+const ERR={'auth/invalid-credential':'E-mail ou senha incorretos.','auth/wrong-password':'E-mail ou senha incorretos.','auth/user-not-found':'Não achei conta com esse e-mail. Toque em "Criar conta".','auth/email-already-in-use':'Já existe uma conta com esse e-mail. Toque em "Entrar".','auth/weak-password':'A senha precisa ter pelo menos 6 letras ou números.','auth/invalid-email':'Confira o e-mail, parece ter algo errado.','auth/missing-password':'Digite a senha.','auth/network-request-failed':'Sem internet agora. Tente de novo quando conectar.','auth/too-many-requests':'Muitas tentativas. Espere uns minutos e tente de novo.','auth/popup-closed-by-user':'A janela do Google foi fechada antes de terminar.','auth/cancelled-popup-request':'','auth/popup-blocked':'O celular bloqueou a janela do Google. Tente de novo, ou entre com e-mail e senha.','auth/operation-not-supported-in-this-environment':'Neste aparelho o Google não abre. Entre com e-mail e senha.','auth/requires-recent-login':'Por segurança, saia e entre de novo na conta, depois tente excluir.'};
+const erro=e=>msg(ERR[e&&e.code]??'Não deu certo agora. Tente de novo.',true);
+async function enviar(){
+  if(!ref)return;clearTimeout(timer);timer=null;
+  const S=D.get(),s=JSON.stringify(S);if(s===ultimo)return;
+  try{await setDoc(ref,{s,u:Math.round(S.u||Date.now())});ultimo=s;D.status({on:true,hora:hora()})}
+  catch(e){D.status({on:true,erro:true})}
+}
+window.nuvemSave=()=>{if(!ref)return;clearTimeout(timer);timer=setTimeout(enviar,900)};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&timer)enviar()});
+window.addEventListener('pagehide',()=>{if(timer)enviar()});
+window.addEventListener('online',()=>{if(ref){ultimo='';enviar()}});
+function aplicar(remoto){
+  const L=D.get(),J=D.juntar(L,remoto);
+  if(JSON.stringify(J)!==JSON.stringify(L))D.set(J);
+  return J;
+}
+onAuthStateChanged(auth,async u=>{
+  if(unsub){unsub();unsub=null}
+  if(!u){ref=null;$('accOut').classList.remove('hidden');$('accIn').classList.add('hidden');D.status({on:false});return}
+  $('accOut').classList.add('hidden');$('accIn').classList.remove('hidden');$('accWho').textContent=u.email||'sua conta';$('pw').value='';
+  ref=doc(db,'diarios',u.uid);D.status({on:true,hora:''});
+  try{
+    const snap=await getDoc(ref);
+    if(snap.exists()){aplicar(JSON.parse(snap.data().s))}
+    ultimo='';await enviar();
+  }catch(e){D.status({on:true,erro:true})}
+  unsub=onSnapshot(ref,sn=>{
+    if(!sn.exists()||sn.metadata.hasPendingWrites)return;
+    const s=sn.data().s;if(s===ultimo)return;
+    try{const J=aplicar(JSON.parse(s));ultimo=s;if(JSON.stringify(J)!==s)window.nuvemSave();D.status({on:true,hora:hora()})}catch(e){}
+  },()=>D.status({on:true,erro:true}));
+});
+const em=()=>$('em').value.trim(),pw=()=>$('pw').value;
+$('gLogin').onclick=async()=>{msg('Abrindo o Google...');try{await signInWithPopup(auth,new GoogleAuthProvider());msg('Pronto! Seu diário agora fica salvo na nuvem.')}catch(e){erro(e)}};
+$('eLogin').onclick=async()=>{msg('Entrando...');try{await signInWithEmailAndPassword(auth,em(),pw());msg('Pronto! Seu diário agora fica salvo na nuvem.')}catch(e){erro(e)}};
+$('eSign').onclick=async()=>{msg('Criando sua conta...');try{await createUserWithEmailAndPassword(auth,em(),pw());msg('Conta criada! Seu diário agora fica salvo na nuvem.')}catch(e){erro(e)}};
+$('eReset').onclick=async()=>{if(!em()){msg('Digite seu e-mail acima e toque de novo em "Esqueci minha senha".',true);return}
+  try{await sendPasswordResetEmail(auth,em());msg('Mandei um e-mail para '+em()+' com o link para criar uma senha nova. Olhe também no spam.')}catch(e){erro(e)}};
+$('logout').onclick=async()=>{if(timer)await enviar();await signOut(auth);msg('Você saiu. O diário continua neste celular.')};
+let confirma=0;
+$('delAcc').onclick=async()=>{
+  if(Date.now()-confirma>8000){confirma=Date.now();msg('Tem certeza? Isso apaga o diário da nuvem para sempre (neste celular ele continua). Toque de novo para confirmar.',true);return}
+  const u=auth.currentUser;if(!u)return;
+  try{if(unsub){unsub();unsub=null}await deleteDoc(doc(db,'diarios',u.uid));ref=null;await deleteUser(u);msg('Conta e dados da nuvem excluídos.')}catch(e){erro(e)}
+};
 </script>
 </body>
 </html>

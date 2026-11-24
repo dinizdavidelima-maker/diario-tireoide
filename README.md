@@ -7,7 +7,7 @@ Um diário simples e bonito para quem cuida da tireoide (Hashimoto, hipotireoidi
 - Peso, resultados de exames e datas de consultas
 - Relatório em PDF para levar ao médico
 
-Os dados ficam salvos só no aparelho de quem usa. Nada é enviado para nenhum servidor.
+Sem conta, os dados ficam só no aparelho de quem usa. Com conta (Google ou e-mail e senha), o diário também fica guardado no Firebase, em São Paulo, e só a própria pessoa consegue abrir.
 
 Abrir: https://dinizdavidelima-maker.github.io/diario-tireoide/
 
