@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meu Diário da Tireoide</title>
+<meta name="description" content="Diário diário para quem cuida da tireoide: remédio, água, sono, sintomas, peso e exames, com relatório em PDF para o médico.">
+<meta name="theme-color" content="#A9566C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Diário Tireoide">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Nunito:wght@400;600;700;800&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: tender, encouraging, never clinical; a mother's daily notebook
+   IDEA: a pressed-flower diary: each kept habit adds a petal to today's flower
+   PICTURE: today's flower at the top, petals opening as she ticks the day
+   COLOUR and TYPE: blush ground, deep rose, sage support, lilac accent; Playfair titles, Nunito body, Dancing Script greetings
+   LAYOUT: one calm phone column, big tap targets, bottom tabs: Hoje, Evolução, Exames, Guia */
+:root{color-scheme:light dark;
+ --bg:light-dark(#FFF6F3,#2A1E24);--card:light-dark(#FFFFFF,#372830);--ink:light-dark(#4B3A41,#F6E9EC);--soft:light-dark(#86717A,#C7B2BA);
+ --rose:light-dark(#D88E9C,#E7A5B2);--deep:light-dark(#A9566C,#F0B5C2);--blush:light-dark(#F8E2E5,#4A303A);--lilac:light-dark(#EEE6F8,#3D3350);--lilacInk:light-dark(#6B5594,#D2C2EE);
+ --sage:light-dark(#E5EFE1,#2F3D30);--sageInk:light-dark(#4F7449,#B9D6B2);--line:light-dark(#F0DADD,#523A44);--gold:#E8B35C}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Nunito",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:540px;margin:0 auto;padding:18px 16px 110px}
+h1,h2{font-family:"Playfair Display",Georgia,serif;color:var(--deep);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:30px}h2{font-size:22px;margin:22px 0 10px}
+.hello{font-family:"Dancing Script",cursive;font-size:26px;color:var(--rose);margin:0}
+.date{color:var(--soft);font-size:15px;margin:2px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
+.hero{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.hero svg{width:150px;height:150px}
+.big{font-family:"Playfair Display",serif;font-size:40px;color:var(--deep);line-height:1}
+.muted{color:var(--soft);font-size:15px}
+.task{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:10px 14px;margin:8px 0;border-radius:18px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.task .ic{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--blush);color:var(--deep);font-weight:800}
+.task.on{border-color:var(--rose);background:var(--blush)}
+.task.on .ic{background:var(--rose);color:#fff}
+.task small{display:block;color:var(--soft);font-size:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cups{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.cup{width:calc((100% - 42px)/8);max-width:40px;height:44px;border-radius:8px 8px 12px 12px;border:2px solid var(--rose);background:transparent;cursor:pointer;padding:0}
+.cup.on{background:linear-gradient(transparent 25%,#CDE3F2 25%);border-color:#8DB8D8}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.scale button{min-height:52px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 15px "Nunito";cursor:pointer}
+.scale button.on{background:var(--lilac);border-color:var(--lilacInk);color:var(--lilacInk)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{min-height:44px;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 15px "Nunito";cursor:pointer}
+.chip.on{background:var(--sage);border-color:var(--sageInk);color:var(--sageInk)}
+.step{display:flex;align-items:center;gap:10px}
+.step button{width:48px;height:48px;border-radius:50%;border:2px solid var(--rose);background:var(--card);color:var(--deep);font:800 22px "Nunito";cursor:pointer}
+.step b{min-width:70px;text-align:center;font-size:20px}
+input,select,textarea{font:16px "Nunito";color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;width:100%}
+textarea{min-height:80px;resize:vertical}
+label{font-weight:700;font-size:15px;display:block;margin:10px 0 4px}
+.btn{min-height:50px;padding:12px 18px;border-radius:16px;border:0;background:var(--deep);color:#fff;font:800 16px "Nunito";cursor:pointer;width:100%;margin-top:10px}
+.btn.ghost{background:transparent;color:var(--deep);border:2px solid var(--rose)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--lilacInk);outline-offset:2px}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:6px max(8px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));z-index:5}
+.tabs button{border:0;background:none;color:var(--soft);font:700 12px "Nunito";min-height:56px;border-radius:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.tabs button.on{color:var(--deep);background:var(--blush)}
+.tabs svg{width:24px;height:24px}
+.view{display:none}.view.on{display:block}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:13px;color:var(--soft)}
+.dot{width:30px;height:30px;border-radius:50%;margin:4px auto 0;border:2px solid var(--line)}
+.dot.on{background:var(--rose);border-color:var(--rose)}
+.fig{position:relative;height:170px}.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.list{list-style:none;padding:0;margin:0}
+.list li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.list li:last-child{border:0}
+.del{border:0;background:none;color:var(--soft);font-size:20px;cursor:pointer;min-width:44px;min-height:44px}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:800;font-size:13px}
+.p1{background:var(--blush);color:var(--deep)}.p2{background:var(--lilac);color:var(--lilacInk)}.p3{background:var(--sage);color:var(--sageInk)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--deep);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:6}
+.toast.show{opacity:1}
+.hist{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start}.hist svg{width:56px;height:56px}.hist h3{font-family:"Playfair Display",serif;color:var(--deep);margin:0 0 2px;font-size:18px}.tag{display:inline-block;margin:4px 6px 0 0;padding:2px 10px;border-radius:999px;background:var(--sage);color:var(--sageInk);font-size:13px;font-weight:700}.edit{background:var(--lilac);color:var(--lilacInk);border-radius:16px;padding:10px 14px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:700}.edit[hidden]{display:none}.edit button{border:0;background:var(--card);color:var(--lilacInk);border-radius:12px;min-height:44px;padding:0 12px;font:800 14px "Nunito";cursor:pointer}.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.seg button{min-height:46px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 14px "Nunito";cursor:pointer}.seg button.on{background:var(--blush);border-color:var(--rose);color:var(--deep)}
+.note{font-size:13px;color:var(--soft);text-align:center;margin-top:18px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:380px){.hero{grid-template-columns:110px 1fr}.hero svg{width:110px;height:110px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="hello" id="hello">Bom dia</p>
+    <h1>Meu diário da tireoide</h1>
+    <p class="date" id="today"></p>
+  </header>
+
+  <!-- ============ HOJE ============ -->
+  <section class="view on" id="v-hoje">
+    <div class="edit" id="editBar" hidden><span id="editTxt"></span><button id="backToday">Voltar para hoje</button></div>
+    <div class="card hero">
+      <svg viewBox="-60 -60 120 120" id="flower" role="img" aria-label="Flor do dia"></svg>
+      <div><div class="big" id="pct">0/6</div><div class="muted" id="msg">Cada cuidado de hoje abre uma pétala da sua flor.</div></div>
+    </div>
+
+    <button class="task" id="t-med"><span class="ic">1</span><span><b>Tomei o remédio</b><small id="medtime">Em jejum, só com água</small></span></button>
+    <button class="task" id="t-wait"><span class="ic">2</span><span><b>Esperei 30 min para comer</b><small>Antes do café e da comida</small></span></button>
+    <button class="task" id="t-cast"><span class="ic">3</span><span><b>Comi 1 castanha-do-pará</b><small>Uma por dia já basta</small></span></button>
+
+    <div class="card">
+      <b>Copos de água</b> <span class="muted" id="aguatxt">0 de 8</span>
+      <div class="cups" id="cups"></div>
+    </div>
+
+    <div class="card">
+      <b>Movimento de hoje</b>
+      <div class="step" style="margin-top:8px"><button id="mv-" aria-label="Menos 5 minutos">−</button><b id="mv">0 min</b><button id="mv+" aria-label="Mais 5 minutos">+</button></div>
+      <div class="muted" style="margin-top:6px">Caminhada, força, alongamento ou dança: tudo conta.</div>
+    </div>
+
+    <div class="card">
+      <b>Como dormi</b>
+      <div class="step" style="margin-top:8px"><button id="sn-" aria-label="Menos meia hora">−</button><b id="sn">7 h</b><button id="sn+" aria-label="Mais meia hora">+</button></div>
+    </div>
+
+    <div class="card">
+      <b>Minha energia hoje</b>
+      <div class="scale" id="energia"></div>
+      <b style="display:block;margin-top:14px">Meu humor</b>
+      <div class="scale" id="humor"></div>
+    </div>
+
+    <div class="card">
+      <b>Senti hoje</b> <span class="muted">(toque no que sentiu)</span>
+      <div class="chips" id="sint"></div>
+      <label for="nota">Anotação do dia</label>
+      <textarea id="nota" placeholder="Ex.: dormi bem e fiz a caminhada com a vizinha"></textarea>
+    </div>
+  </section>
+
+  <!-- ============ EVOLUÇÃO ============ -->
+  <section class="view" id="v-evo">
+    <h2>Remédio nos últimos 7 dias</h2>
+    <div class="card"><div class="week" id="week"></div><p class="muted" id="streak" style="margin:10px 0 0;text-align:center"></p></div>
+
+    <h2>Minha energia</h2>
+    <div class="card"><div class="fig"><svg id="chartE"></svg></div><p class="muted" style="margin:6px 0 0">Últimos 14 dias, de 1 (cansada) a 5 (ótima)</p></div>
+
+    <h2>Meu peso</h2>
+    <div class="card">
+      <div class="fig"><svg id="chartP"></svg></div>
+      <div class="grid2" style="margin-top:8px">
+        <div><label for="pesoD">Data</label><input type="date" id="pesoD"></div>
+        <div><label for="pesoV">Peso (kg)</label><input type="number" step="0.1" inputmode="decimal" id="pesoV" placeholder="68,5"></div>
+      </div>
+      <button class="btn" id="addPeso">Salvar peso</button>
+    </div>
+  </section>
+
+  <!-- ============ EXAMES ============ -->
+  <section class="view" id="v-exa">
+    <h2>Próximos compromissos</h2>
+    <div class="card">
+      <label for="dConsulta">Consulta com o endocrinologista</label><input type="date" id="dConsulta">
+      <label for="dExame">Próximo exame de sangue (TSH)</label><input type="date" id="dExame">
+      <label for="dUS">Ultrassom da tireoide (nódulos)</label><input type="date" id="dUS">
+      <p class="muted" id="proximo" style="margin:10px 0 0"></p>
+    </div>
+
+    <h2>Resultados de exames</h2>
+    <div class="card">
+      <div class="fig"><svg id="chartT"></svg></div>
+      <p class="muted" style="margin:4px 0 8px">Gráfico do TSH ao longo do tempo</p>
+      <div class="grid2">
+        <div><label for="exT">Exame</label><select id="exT"><option>TSH</option><option>T4 livre</option><option>Anti-TPO</option><option>Outro</option></select></div>
+        <div><label for="exV">Resultado</label><input id="exV" inputmode="decimal" placeholder="2,5"></div>
+      </div>
+      <label for="exD">Data do exame</label><input type="date" id="exD">
+      <button class="btn" id="addEx">Salvar resultado</button>
+      <ul class="list" id="exList" style="margin-top:12px"></ul>
+    </div>
+  </section>
+
+  <!-- ============ HISTÓRICO ============ -->
+  <section class="view" id="v-hist">
+    <h2>Relatório para o médico</h2>
+    <div class="card">
+      <b>Período</b>
+      <div class="seg" id="periodo"><button data-d="7">7 dias</button><button data-d="30" class="on">30 dias</button><button data-d="90">3 meses</button><button data-d="0">Tudo</button></div>
+      <button class="btn" id="pdf">Baixar relatório em PDF</button>
+      <p class="muted" id="pdfMsg" style="margin:8px 0 0">Um resumo bonito para levar à consulta ou mandar pelo WhatsApp.</p>
+    </div>
+    <h2>Meus dias</h2>
+    <div id="histList"></div>
+  </section>
+
+  <!-- ============ GUIA ============ -->
+  <section class="view" id="v-guia">
+    <h2>As regrinhas do remédio</h2>
+    <div class="card"><span class="pill p1">Ao acordar</span><p>Tomar só com água, em jejum, sempre no mesmo horário.</p></div>
+    <div class="card"><span class="pill p1">Esperar</span><p>De 30 a 60 minutos antes do café, do leite ou de comer.</p></div>
+    <div class="card"><span class="pill p2">Ferro e cálcio</span><p>Se tomar esses suplementos, deixar 4 horas de distância do remédio.</p></div>
+    <div class="card"><span class="pill p2">Soja</span><p>Leite e proteína de soja: 3 a 4 horas longe do remédio.</p></div>
+    <div class="card"><span class="pill p3">Avisar o médico</span><p>Cansaço que piora, ganho de peso rápido, coração acelerado, ou um caroço no pescoço que cresce, dificuldade para engolir ou rouquidão.</p></div>
+
+    <h2>Meus ajustes</h2>
+    <div class="card">
+      <label for="nome">Como quer ser chamada?</label><input id="nome" placeholder="seu nome">
+      <label for="hora">Horário do remédio</label><input type="time" id="hora" value="06:30">
+      <button class="btn ghost" id="copy">Copiar meus dados (cópia de segurança)</button>
+      <p class="muted" id="where" style="margin:10px 0 0"></p>
+    </div>
+    <p class="note">Este diário ajuda no dia a dia e não substitui a consulta. Mostre a aba Evolução e os exames ao médico.</p>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Seções">
+  <button class="on" data-v="hoje"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Hoje</button>
+  <button data-v="evo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M5 16l4-5 4 3 6-8"/></svg>Evolução</button>
+  <button data-v="exa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Exames</button>
+  <button data-v="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Histórico</button>
+  <button data-v="guia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg>Guia</button>
+</nav>
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const key=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const T=key(new Date());let cur=T;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtBR=k=>{if(!k)return'';const [y,m,d]=k.split('-');return d+'/'+m+'/'+y};
+const SINT=['Cansaço','Inchaço','Frio','Intestino preso','Dor de cabeça','Queda de cabelo','Pele seca','Desânimo'];
+const blank=()=>({days:{},peso:[],exames:[],datas:{},nome:'',hora:'06:30'});
+let S=blank();
+
+function day(){S.days[cur]=S.days[cur]||{med:false,wait:false,cast:false,agua:0,mov:0,sono:7,energia:0,humor:0,sint:[],nota:''};return S.days[cur]}
+
+function local(get,val){try{if(get)return JSON.parse(localStorage.getItem('diarioTireoide')||'null');localStorage.setItem('diarioTireoide',JSON.stringify(val))}catch(e){return null}}
+function save(){
+  local(false,S);
+}
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* ---------- flower ---------- */
+function flower(n){$('flower').innerHTML=flowerSVG(n)}
+function flowerSVG(n){
+  const cols=['#F2B8C2','#E79AAA','#D4C3EC','#F2B8C2','#E79AAA','#D4C3EC'];let s='';
+  for(let i=0;i<6;i++){const on=i<n;s+=`<ellipse cx="0" cy="-30" rx="16" ry="27" transform="rotate(${i*60})" fill="${on?cols[i]:'none'}" stroke="${on?'none':'var(--line)'}" stroke-width="2" stroke-dasharray="${on?0:'4 4'}"/>`}
+  s+=`<path d="M0 30 C 4 45 0 52 -2 58" stroke="#8FB088" stroke-width="3" fill="none"/><ellipse cx="10" cy="48" rx="9" ry="4" transform="rotate(-30 10 48)" fill="#A9C6A2"/>`;
+  s+=`<circle r="13" fill="${n>=6?'#F5C75C':'#F7DFA6'}"/><circle r="6" fill="#E8B35C"/>`;
+  return s;
+}
+function score(d){return [d.med,d.wait,d.cast,d.agua>=6,d.mov>=20,d.sono>=7].filter(Boolean).length}
+
+/* ---------- render ---------- */
+function renderHoje(){
+  $('editBar').hidden=cur===T;$('editTxt').textContent='Editando o dia '+fmtBR(cur);
+  const d=day(), n=score(d);
+  flower(n);$('pct').textContent=n+'/6';
+  $('msg').textContent=n===6?'Sua flor está completa hoje. Que orgulho!':n>=3?'Que lindo, a flor já está abrindo!':'Cada cuidado de hoje abre uma pétala da sua flor.';
+  [['t-med','med'],['t-wait','wait'],['t-cast','cast']].forEach(([id,k])=>$(id).classList.toggle('on',!!d[k]));
+  $('medtime').textContent=d.med&&d.medAt?'Tomado às '+d.medAt:'Em jejum, só com água, às '+(S.hora||'06:30');
+  $('cups').innerHTML=Array.from({length:8},(_,i)=>`<button class="cup${i<d.agua?' on':''}" data-i="${i}" aria-label="Copo ${i+1}"></button>`).join('');
+  $('aguatxt').textContent=d.agua+' de 8';
+  $('mv').textContent=d.mov+' min';$('sn').textContent=String(d.sono).replace('.',',')+' h';
+  const lab=['1','2','3','4','5'];
+  $('energia').innerHTML=lab.map((l,i)=>`<button class="${d.energia===i+1?'on':''}" data-v="${i+1}">${l}</button>`).join('');
+  $('humor').innerHTML=['Triste','Meh','Ok','Bem','Ótima'].map((l,i)=>`<button class="${d.humor===i+1?'on':''}" data-v="${i+1}">${l}</button>`).join('');
+  $('sint').innerHTML=SINT.map(s=>`<button class="chip${d.sint.includes(s)?' on':''}" data-s="${esc(s)}">${esc(s)}</button>`).join('');
+  if(document.activeElement!==$('nota'))$('nota').value=d.nota||'';
+  const nome=S.nome?', '+S.nome:'',h=new Date().getHours();
+  $('hello').textContent=(h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+nome;
+}
+function lastDays(n){const out=[];for(let i=n-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);out.push(d)}return out}
+function line(svg,pts,ymin,ymax,color,fmt){
+  const draw=()=>{const W=svg.clientWidth,H=svg.clientHeight,p=24;
+    if(!pts.length){svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--soft)" font-size="14">Ainda sem dados: comece hoje</text>`;return}
+    const xs=i=>p+(W-2*p)*(pts.length===1?.5:i/(pts.length-1)),ys=v=>H-p-(H-2*p)*((v-ymin)/((ymax-ymin)||1));
+    let s=`<line x1="${p}" y1="${H-p}" x2="${W-p}" y2="${H-p}" stroke="var(--line)"/>`;
+    s+=`<path d="${pts.map((q,i)=>(i?'L':'M')+xs(i)+' '+ys(q.v)).join(' ')}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+    pts.forEach((q,i)=>{s+=`<circle cx="${xs(i)}" cy="${ys(q.v)}" r="5" fill="var(--card)" stroke="${color}" stroke-width="3"/>`;if(pts.length<=8||i===pts.length-1)s+=`<text x="${xs(i)}" y="${ys(q.v)-10}" text-anchor="middle" font-size="12" fill="var(--soft)">${esc(fmt(q.v))}</text>`});
+    s+=`<text x="${p}" y="${H-6}" font-size="11" fill="var(--soft)">${esc(pts[0].l)}</text><text x="${W-p}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--soft)">${esc(pts[pts.length-1].l)}</text>`;
+    svg.innerHTML=s};
+  draw();if(!svg._ro){svg._ro=new ResizeObserver(()=>svg._draw&&svg._draw());svg._ro.observe(svg)}svg._draw=draw;
+}
+function renderEvo(){
+  const w=lastDays(7),names=['D','S','T','Q','Q','S','S'];let streak=0;
+  $('week').innerHTML=w.map(d=>{const x=S.days[key(d)];return `<div>${names[d.getDay()]}<div class="dot${x&&x.med?' on':''}"></div></div>`}).join('');
+  for(let i=0;i<400;i++){const d=new Date();d.setDate(d.getDate()-i);const x=S.days[key(d)];if(x&&x.med)streak++;else if(i===0)continue;else break}
+  $('streak').textContent=streak>1?streak+' dias seguidos tomando o remédio certinho':'Marque o remédio todo dia para ver a sequência crescer';
+  const e=lastDays(14).map(d=>({d,x:S.days[key(d)]})).filter(o=>o.x&&o.x.energia).map(o=>({v:o.x.energia,l:fmtBR(key(o.d)).slice(0,5)}));
+  line($('chartE'),e,1,5,'#C8B5E2',v=>v);
+  const p=[...S.peso].sort((a,b)=>a.d<b.d?-1:1).slice(-12).map(o=>({v:o.kg,l:fmtBR(o.d).slice(0,5)}));
+  const vs=p.map(o=>o.v);line($('chartP'),p,Math.min(...vs,999)-1,Math.max(...vs,0)+1,'#D88E9C',v=>String(v).replace('.',','));
+}
+function renderExa(){
+  ['Consulta','Exame','US'].forEach(k=>{if(document.activeElement!==$('d'+k))$('d'+k).value=S.datas[k]||''});
+  const prox=[['Consulta','consulta'],['Exame','exame de sangue'],['US','ultrassom']].filter(([k])=>S.datas[k]&&S.datas[k]>=T).sort((a,b)=>S.datas[a[0]]<S.datas[b[0]]?-1:1)[0];
+  $('proximo').textContent=prox?`Próximo: ${prox[1]} em ${fmtBR(S.datas[prox[0]])}`:'Anote as datas para não esquecer.';
+  const ex=[...S.exames].sort((a,b)=>a.d<b.d?1:-1);
+  $('exList').innerHTML=ex.length?ex.map(o=>`<li><span><b>${esc(o.t)}</b> · ${esc(String(o.v).replace('.',','))}<br><span class="muted">${esc(fmtBR(o.d))}</span></span><button class="del" data-id="${esc(o.id)}" aria-label="Apagar">×</button></li>`).join(''):'<li class="muted">Nenhum resultado ainda.</li>';
+  const tsh=ex.filter(o=>o.t==='TSH'&&!isNaN(o.v)).reverse().map(o=>({v:+o.v,l:fmtBR(o.d).slice(3)}));
+  const tv=tsh.map(o=>o.v);line($('chartT'),tsh,0,Math.max(5,...tv),'#9DBA97',v=>String(v).replace('.',','));
+}
+function renderGuia(){if(document.activeElement!==$('nome'))$('nome').value=S.nome==='mãe'?'':(S.nome||'');$('hora').value=S.hora||'06:30';
+  $('where').textContent='Seus dados ficam salvos só neste aparelho, com privacidade. Use a cópia de segurança de vez em quando.'}
+const EN=['','Muito cansada','Cansada','Normal','Bem disposta','Ótima'],HU=['','Triste','Meh','Ok','Bem','Ótima'];
+function renderHist(){
+  const ks=Object.keys(S.days).sort().reverse();
+  $('histList').innerHTML=ks.length?ks.map(k=>{const d=S.days[k];const wd=new Date(k+'T12:00').toLocaleDateString('pt-BR',{weekday:'long'});
+    return `<div class="card hist"><svg viewBox="-60 -60 120 120">${flowerSVG(score(d))}</svg><div>
+      <h3>${esc(fmtBR(k))} <span class="muted" style="font-family:Nunito;font-size:14px">${esc(wd)}</span></h3>
+      <div class="muted">${d.med?'Remédio tomado'+(d.medAt?' às '+esc(d.medAt):''):'Remédio não marcado'} · ${d.agua||0} copos · ${d.mov||0} min · ${esc(String(d.sono??'-').replace('.',','))} h de sono</div>
+      <div style="margin-top:4px">${d.energia?'Energia: <b>'+esc(EN[d.energia])+'</b>':''}${d.energia&&d.humor?' · ':''}${d.humor?'Humor: <b>'+esc(HU[d.humor])+'</b>':''}</div>
+      ${(d.sint||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join('')}
+      ${d.nota?`<p style="margin:6px 0 0;font-style:italic">“${esc(d.nota)}”</p>`:''}
+      <button class="btn ghost" data-k="${esc(k)}" style="min-height:44px;margin-top:8px;padding:8px">Ver ou corrigir este dia</button></div></div>`}).join(''):'<div class="card muted">Seus dias vão aparecer aqui, começando por hoje.</div>';
+}
+function render(){renderHoje();renderEvo();renderExa();renderHist();renderGuia()}
+
+let periodo=30;
+function buildPDF(){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const W=210,M=16;let y=0;
+  const rose=[169,86,108],soft=[124,104,112],ink=[75,58,65],blush=[248,226,229];
+  const ks=Object.keys(S.days).sort();const from=periodo?(()=>{const d=new Date();d.setDate(d.getDate()-periodo+1);return key(d)})():(ks[0]||T);
+  const days=ks.filter(k=>k>=from&&k<=T).map(k=>[k,S.days[k]]);
+  const head=()=>{doc.setFillColor(...blush);doc.rect(0,0,W,30,'F');doc.setFillColor(242,184,194);doc.circle(W-22,12,9,'F');doc.setFillColor(212,195,236);doc.circle(W-34,20,6,'F');doc.setFillColor(245,199,92);doc.circle(W-22,12,3,'F');
+    doc.setTextColor(...rose);doc.setFont('times','bold');doc.setFontSize(20);doc.text('Diário da Tireoide',M,14);
+    doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(...soft);doc.text(`${S.nome&&S.nome!=='mãe'?S.nome+' · ':''}Período: ${fmtBR(from)} a ${fmtBR(T)}`,M,22);y=40};
+  const need=h=>{if(y+h>285){doc.addPage();head()}};
+  const title=t=>{need(14);doc.setFont('times','bold');doc.setFontSize(14);doc.setTextColor(...rose);doc.text(t,M,y);y+=7};
+  const textL=(t,size=10.5,col=ink,bold=false)=>{doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(size);doc.setTextColor(...col);const lines=doc.splitTextToSize(t,W-2*M);need(lines.length*5);doc.text(lines,M,y);y+=lines.length*5};
+  head();
+  const n=days.length,med=days.filter(([,d])=>d.med).length;
+  const avg=f=>{const v=days.map(([,d])=>d[f]).filter(x=>x);return v.length?(v.reduce((a,b)=>a+b,0)/v.length):null};
+  const f1=v=>v==null?'-':v.toFixed(1).replace('.',',');
+  title('Resumo');
+  const boxes=[['Dias registrados',String(n)],['Remédio tomado',n?`${med} de ${n} dias`:'-'],['Energia média (1 a 5)',f1(avg('energia'))],['Humor médio (1 a 5)',f1(avg('humor'))],['Sono médio',avg('sono')==null?'-':f1(avg('sono'))+' h'],['Água média',avg('agua')==null?'-':f1(avg('agua'))+' copos'],['Movimento total',days.reduce((a,[,d])=>a+(d.mov||0),0)+' min']];
+  const bw=(W-2*M-8)/3;boxes.forEach((b,i)=>{const cx=M+(i%3)*(bw+4),cy=y+Math.floor(i/3)*20;doc.setFillColor(255,246,243);doc.setDrawColor(240,218,221);doc.roundedRect(cx,cy,bw,17,3,3,'FD');doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...soft);doc.text(b[0],cx+4,cy+6);doc.setFont('helvetica','bold');doc.setFontSize(12.5);doc.setTextColor(...rose);doc.text(b[1],cx+4,cy+13)});
+  y+=Math.ceil(boxes.length/3)*20+4;
+  const cnt={};days.forEach(([,d])=>(d.sint||[]).forEach(x=>cnt[x]=(cnt[x]||0)+1));
+  title('Sintomas mais frequentes');
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);textL(top.length?top.map(([k,v])=>`${k}: ${v} dia${v>1?'s':''}`).join('   •   '):'Nenhum sintoma marcado no período.');y+=3;
+  const ps=[...S.peso].filter(o=>o.d>=from).sort((a,b)=>a.d<b.d?-1:1);
+  title('Peso');textL(ps.length?ps.map(o=>`${fmtBR(o.d)}: ${String(o.kg).replace('.',',')} kg`).join('   •   '):'Nenhum peso registrado no período.');y+=3;
+  title('Exames');const ex=[...S.exames].sort((a,b)=>a.d<b.d?-1:1);textL(ex.length?ex.map(o=>`${fmtBR(o.d)} · ${o.t}: ${String(o.v).replace('.',',')}`).join('\n'):'Nenhum exame registrado.');y+=3;
+  title('Dia a dia');
+  const cols=[[M,'Data'],[M+22,'Remédio'],[M+42,'Energia'],[M+62,'Humor'],[M+80,'Sono'],[M+94,'Sintomas e anotações']];
+  const th=()=>{need(9);doc.setFillColor(...blush);doc.rect(M,y-4.5,W-2*M,7,'F');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...rose);cols.forEach(([x,t])=>doc.text(t,x+1,y));y+=6};
+  th();
+  days.slice().reverse().forEach(([k,d])=>{const txt=[(d.sint||[]).join(', '),d.nota?'"'+d.nota+'"':''].filter(Boolean).join(' · ')||'-';
+    const lines=doc.splitTextToSize(txt,W-M-(M+95));const h=Math.max(6,lines.length*4.2+2);
+    if(y+h>285){doc.addPage();head();th()}
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...ink);
+    doc.text(fmtBR(k).slice(0,5),M+1,y);doc.text(d.med?'Sim':'Não',M+23,y);doc.text(d.energia?String(d.energia):'-',M+43,y);doc.text(d.humor?String(d.humor):'-',M+63,y);doc.text(d.sono!=null?String(d.sono).replace('.',',')+' h':'-',M+81,y);doc.text(lines,M+95,y);
+    y+=h;doc.setDrawColor(240,218,221);doc.line(M,y-3.5,W-M,y-3.5)});
+  if(!days.length)textL('Nenhum dia registrado no período.');
+  const pages=doc.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...soft);doc.text(`Feito no Meu Diário da Tireoide · página ${i} de ${pages}`,W/2,292,{align:'center'})}
+  return doc.output('blob');
+}
+
+/* ---------- events ---------- */
+{const t=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});$('today').textContent=t.charAt(0).toUpperCase()+t.slice(1);}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v));window.scrollTo(0,0);render()});
+const tog=(id,k,m)=>$(id).onclick=()=>{const d=day();d[k]=!d[k];if(k==='med')d.medAt=d.med?new Date().toTimeString().slice(0,5):'';save();renderHoje();if(d[k]&&m)toast(m)};
+tog('t-med','med','Remédio anotado. Agora é só esperar 30 minutinhos');tog('t-wait','wait','Muito bem!');tog('t-cast','cast','Selênio do dia garantido');
+$('cups').onclick=e=>{const b=e.target.closest('.cup');if(!b)return;const d=day(),i=+b.dataset.i;d.agua=d.agua===i+1?i:i+1;save();renderHoje();if(d.agua===8)toast('8 copos! Que hidratação linda')};
+$('mv-').onclick=()=>{const d=day();d.mov=Math.max(0,d.mov-5);save();renderHoje()};
+$('mv+').onclick=()=>{const d=day();d.mov=Math.min(300,d.mov+5);save();renderHoje();if(d.mov===30)toast('30 minutos de movimento, parabéns!')};
+$('sn-').onclick=()=>{const d=day();d.sono=Math.max(0,d.sono-.5);save();renderHoje()};
+$('sn+').onclick=()=>{const d=day();d.sono=Math.min(14,d.sono+.5);save();renderHoje()};
+$('energia').onclick=e=>{const b=e.target.closest('button');if(!b)return;day().energia=+b.dataset.v;save();renderHoje()};
+$('humor').onclick=e=>{const b=e.target.closest('button');if(!b)return;day().humor=+b.dataset.v;save();renderHoje()};
+$('sint').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const d=day(),s=b.dataset.s;d.sint=d.sint.includes(s)?d.sint.filter(x=>x!==s):[...d.sint,s];save();renderHoje()};
+$('nota').oninput=()=>{day().nota=$('nota').value;save()};
+$('pesoD').value=T;$('exD').value=T;
+$('addPeso').onclick=()=>{const v=parseFloat(String($('pesoV').value).replace(',','.'));if(!(v>20&&v<300)){toast('Digite o peso em kg, ex.: 68,5');return}const d=$('pesoD').value||T;S.peso=S.peso.filter(o=>o.d!==d);S.peso.push({d,kg:Math.round(v*10)/10});$('pesoV').value='';save();renderEvo();toast('Peso salvo')};
+['Consulta','Exame','US'].forEach(k=>$('d'+k).onchange=()=>{S.datas[k]=$('d'+k).value;save();renderExa()});
+$('addEx').onclick=()=>{const raw=String($('exV').value).trim();if(!raw){toast('Digite o resultado do exame');return}const n=parseFloat(raw.replace(',','.'));S.exames.push({id:Date.now().toString(36),t:$('exT').value,v:isNaN(n)?raw:n,d:$('exD').value||T});$('exV').value='';save();renderExa();toast('Resultado salvo')};
+$('exList').onclick=e=>{const b=e.target.closest('.del');if(!b)return;S.exames=S.exames.filter(o=>o.id!==b.dataset.id);save();renderExa()};
+$('nome').oninput=()=>{S.nome=$('nome').value.trim();save();renderHoje()};
+$('hora').onchange=()=>{S.hora=$('hora').value;save();renderHoje()};
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(S));toast('Copiado! Cole numa conversa ou nota para guardar')}catch(e){toast('Não deu para copiar neste aparelho')}};
+
+$('histList').onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;cur=b.dataset.k;document.querySelector('[data-v=hoje]').click()};
+$('backToday').onclick=()=>{cur=T;renderHoje();window.scrollTo(0,0)};
+$('periodo').onclick=e=>{const b=e.target.closest('button');if(!b)return;periodo=+b.dataset.d;[...$('periodo').children].forEach(x=>x.classList.toggle('on',x===b))};
+$('pdf').onclick=()=>{
+  if(!window.jspdf){$('pdfMsg').textContent='Ainda carregando, tente de novo em alguns segundos.';return}
+  try{const blob=buildPDF();const name='Relatorio_Diario_Tireoide_'+T+'.pdf';const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);$('pdfMsg').textContent='Relatório baixado. Pode mostrar ao médico ou mandar pelo WhatsApp.'}
+  catch(e){$('pdfMsg').textContent='Não consegui gerar o relatório agora. Tente de novo.'}
+};
+/* ---------- load ---------- */
+const L=local(true);if(L&&L.days)S=Object.assign(blank(),L);
+render();
+}
+</script>
+</body>
+</html>
